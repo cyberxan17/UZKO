@@ -39,10 +39,13 @@ import {
   Edit3,
   IdCard,
   LockKeyhole,
+  LogIn,
+  LogOut,
   Minus,
   Plus,
   ReceiptText,
   RotateCcw,
+  ScanBarcode,
   Search,
   TrendingUp,
   Trash2,
@@ -69,6 +72,12 @@ type WorkSchedule = { start: string; end: string };
 type AttendanceRecord = { in: string; out: string; off?: boolean };
 type AttendanceState = Record<string, Record<string, AttendanceRecord>>;
 type FineRule = { id: string; minutes: number; amount: number };
+type ScanResult = {
+  employeeId: string;
+  employeeName: string;
+  action: "in" | "out";
+  time: string;
+};
 type SalaryMetric = {
   employee: Employee;
   expected: WorkSchedule;
@@ -349,12 +358,18 @@ function WorkTimeCalculator({
   cashierName: string;
 }) {
   const [workQuery, setWorkQuery] = React.useState("");
+  const [scanCode, setScanCode] = React.useState("");
+  const [scanAction, setScanAction] = React.useState<ScanResult["action"]>("in");
+  const [lastScanResult, setLastScanResult] = React.useState<ScanResult | null>(null);
+  const scanInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedMonth, setSelectedMonth] = React.useState(() => currentMonthKey());
   const [exceptionAddOpen, setExceptionAddOpen] = React.useState(false);
   const [exceptionListOpen, setExceptionListOpen] = React.useState(false);
   const [exceptionQuery, setExceptionQuery] = React.useState("");
   const [selectedExceptionId, setSelectedExceptionId] = React.useState("");
   const [fineDialogOpen, setFineDialogOpen] = React.useState(false);
+  const [scanDialogOpen, setScanDialogOpen] = React.useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = React.useState(false);
   const [calendarEmployee, setCalendarEmployee] = React.useState<Employee | null>(null);
   const [salesEmployee, setSalesEmployee] = React.useState<Employee | null>(null);
   const [salaryStatus, setSalaryStatus] = React.useState<SalaryStatusFilter>("all");
@@ -376,6 +391,11 @@ function WorkTimeCalculator({
   const days = React.useMemo(() => currentMonthDays(selectedMonth), [selectedMonth]);
   const isEditablePeriod = selectedMonth === currentMonthKey();
   const isSalaryMode = mode === "salary";
+  const todayAttendanceDay = React.useMemo(() => {
+    if (selectedMonth !== currentMonthKey()) return null;
+    const today = new Date().getDate();
+    return days.find((day) => day.day === today) ?? null;
+  }, [days, selectedMonth]);
   const calculatorTitle = isSalaryMode ? "Oylik hisoblash" : "Oy bo'yicha ish vaqti";
   const filterTitle = isSalaryMode ? "Xodim filteri" : "Ish vaqtini filterlash";
   const filterPlaceholder = isSalaryMode
@@ -397,6 +417,10 @@ function WorkTimeCalculator({
       return next;
     });
   }, [employees, days]);
+
+  React.useEffect(() => {
+    if (scanDialogOpen) scanInputRef.current?.focus();
+  }, [scanDialogOpen]);
 
   const monthLabel = React.useMemo(() => {
     const [year, month] = selectedMonth.split("-").map((part) => Number(part));
@@ -575,6 +599,79 @@ function WorkTimeCalculator({
     });
   };
 
+  const handleScanAttendance = (event: React.FormEvent) => {
+    event.preventDefault();
+    const code = scanCode.trim();
+    if (!code) {
+      toast.error("Skaner uchun xodim ID kiriting");
+      return;
+    }
+    if (!isEditablePeriod || !todayAttendanceDay) {
+      toast.error("Skaner faqat joriy oy va bugungi kun uchun ishlaydi");
+      return;
+    }
+
+    const employee = findEmployeeByScanCode(code, employees);
+    if (!employee) {
+      toast.error("Xodim topilmadi", { description: code });
+      return;
+    }
+
+    const dayKey = todayAttendanceDay.key;
+    const record = attendance[employee.id]?.[dayKey] ?? { in: "", out: "" };
+    if (record.off) {
+      toast.error("Bu xodim bugun dam kuni sifatida belgilangan", {
+        description: employee.name,
+      });
+      return;
+    }
+    if (scanAction === "in" && record.in) {
+      toast.info("Bugungi kelish vaqti allaqachon kiritilgan", {
+        description: `${employee.name}: ${record.in}`,
+      });
+      setScanCode("");
+      scanInputRef.current?.focus();
+      return;
+    }
+    if (scanAction === "out" && record.out) {
+      toast.info("Bugungi ketish vaqti allaqachon kiritilgan", {
+        description: `${employee.name}: ${record.out}`,
+      });
+      setScanCode("");
+      scanInputRef.current?.focus();
+      return;
+    }
+
+    const action = scanAction;
+    const time = currentTimeValue();
+    setAttendance((current) => ({
+      ...current,
+      [employee.id]: {
+        ...(current[employee.id] ?? {}),
+        [dayKey]: {
+          in: record.in,
+          out: record.out,
+          off: record.off,
+          [action]: time,
+        },
+      },
+    }));
+    setLastScanResult({
+      employeeId: employee.id,
+      employeeName: employee.name,
+      action,
+      time,
+    });
+    setScanCode("");
+    scanInputRef.current?.focus();
+    toast.success(
+      action === "in" ? "Ishga kelish vaqti qo'shildi" : "Ishdan ketish vaqti qo'shildi",
+      {
+        description: `${employee.name} - ${time}`,
+      },
+    );
+  };
+
   const confirmSalary = (metric: SalaryMetric) => {
     if (paidEmployeeIds.has(metric.employee.id)) return;
     const amount = Math.round(metric.totalSalary);
@@ -614,7 +711,7 @@ function WorkTimeCalculator({
           isSalaryMode ? "mb-2 p-2" : "mb-3 p-2.5"
         }`}
       >
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-wrap items-start gap-3">
           <div className={isSalaryMode ? "min-w-[220px] flex-1" : "min-w-[260px] flex-1"}>
             <div className="mb-1 text-xs font-bold">{filterTitle}</div>
             <div className="relative">
@@ -623,9 +720,48 @@ function WorkTimeCalculator({
                 value={workQuery}
                 onChange={(event) => setWorkQuery(event.target.value)}
                 placeholder={filterPlaceholder}
-                className={isSalaryMode ? "h-8 pl-9 text-xs" : "h-8 pl-9 text-xs"}
+                className="h-8 pl-9 text-xs"
               />
             </div>
+            {!isSalaryMode && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setScheduleDialogOpen(true)}
+                  className="h-8 w-8 shrink-0"
+                  title="Qatiy ish vaqti"
+                  aria-label="Qatiy ish vaqti"
+                >
+                  <Clock3 className="h-4 w-4 text-primary" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setScanDialogOpen(true)}
+                  className="h-8 w-8 shrink-0"
+                  title="ID skaner orqali kirim/chiqim"
+                  aria-label="ID skaner orqali kirim/chiqim"
+                >
+                  <ScanBarcode className="h-4 w-4 text-primary" />
+                </Button>
+                <Badge variant="secondary" className="h-8 px-2">
+                  {defaultSchedule.start || "--:--"} - {defaultSchedule.end || "--:--"}
+                </Badge>
+                {lastScanResult && (
+                  <Badge variant="outline" className="h-8 gap-1 px-2">
+                    {lastScanResult.action === "in" ? (
+                      <LogIn className="h-3 w-3 text-emerald-600" />
+                    ) : (
+                      <LogOut className="h-3 w-3 text-primary" />
+                    )}
+                    {lastScanResult.employeeId} - {lastScanResult.time}
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
           {isSalaryMode && (
             <div className="min-w-[180px] space-y-1.5">
@@ -645,7 +781,13 @@ function WorkTimeCalculator({
               </Select>
             </div>
           )}
-          <div className={isSalaryMode ? "min-w-[170px] space-y-1.5" : "min-w-[220px] space-y-1.5"}>
+          <div
+            className={
+              isSalaryMode
+                ? "min-w-[170px] space-y-1.5"
+                : "-mt-2 min-w-[220px] space-y-1.5"
+            }
+          >
             <Label className="text-xs font-semibold text-muted-foreground">Davr</Label>
             <Input
               type="month"
@@ -666,98 +808,7 @@ function WorkTimeCalculator({
         </div>
       </div>
 
-      <div
-        className={
-          isSalaryMode
-            ? "grid min-h-0 flex-1 gap-4"
-            : "grid min-h-0 flex-1 gap-4 xl:grid-cols-[420px_minmax(0,1fr)]"
-        }
-      >
-        {!isSalaryMode && (
-          <section className="min-h-0 overflow-auto">
-            <div className="rounded-lg border bg-card p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <Clock3 className="h-4 w-4" />
-                </div>
-                <div>
-                  <h2 className="font-bold">Qatiy ish vaqti</h2>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Ishga kelish">
-                  <Input
-                    type="time"
-                    value={defaultSchedule.start}
-                    onChange={(event) =>
-                      setDefaultSchedule((current) => ({
-                        ...current,
-                        start: event.target.value,
-                      }))
-                    }
-                  />
-                </Field>
-                <Field label="Ishdan ketish">
-                  <Input
-                    type="time"
-                    value={defaultSchedule.end}
-                    onChange={(event) =>
-                      setDefaultSchedule((current) => ({
-                        ...current,
-                        end: event.target.value,
-                      }))
-                    }
-                  />
-                </Field>
-              </div>
-
-              <div className="mt-3 rounded-md bg-muted/40 px-3 py-2 text-sm">
-                Belgilangan vaqt:{" "}
-                <b>
-                  {defaultSchedule.start || "--:--"} - {defaultSchedule.end || "--:--"}
-                </b>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setFineDialogOpen(true)}
-                  className="gap-2"
-                >
-                  <ReceiptText className="h-4 w-4" />
-                  Jarima
-                  <Badge variant="secondary" className="ml-1">
-                    {fineRules.length}
-                  </Badge>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setExceptionAddOpen(true)}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Istisno xodim qo'shish
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setExceptionListOpen(true)}
-                  className="gap-2"
-                >
-                  <UsersRound className="h-4 w-4" />
-                  Istisno xodimlar list
-                  <Badge variant="outline" className="ml-1">
-                    {exceptionEmployees.length}
-                  </Badge>
-                </Button>
-              </div>
-            </div>
-          </section>
-        )}
-
+      <div className="grid min-h-0 flex-1 gap-4">
         {isSalaryMode ? (
           <SalarySummary
             metrics={salaryMetrics}
@@ -918,6 +969,166 @@ function WorkTimeCalculator({
         onClose={() => setCalendarEmployee(null)}
       />
       <SalesCommissionDialog metric={salesMetric} onClose={() => setSalesEmployee(null)} />
+
+      <Dialog open={scanDialogOpen} onOpenChange={setScanDialogOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ScanBarcode className="h-5 w-5 text-primary" />
+              ID skaner orqali kirim/chiqim
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="rounded-lg border border-dashed bg-muted/30 p-3 text-sm text-muted-foreground">
+              Xodim ID, QR yoki shtrix kod qiymati yuborilganda tizim bugungi kelish yoki ketish
+              vaqtini avtomatik yozadi.
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 rounded-lg border bg-muted/20 p-1">
+              <Button
+                type="button"
+                variant={scanAction === "in" ? "default" : "ghost"}
+                onClick={() => setScanAction("in")}
+                className="h-9 gap-2"
+              >
+                <LogIn className="h-4 w-4" />
+                Kirish
+              </Button>
+              <Button
+                type="button"
+                variant={scanAction === "out" ? "default" : "ghost"}
+                onClick={() => setScanAction("out")}
+                className="h-9 gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Chiqish
+              </Button>
+            </div>
+
+            <form className="flex flex-wrap gap-2" onSubmit={handleScanAttendance}>
+              <div className="relative min-w-[190px] flex-1">
+                <IdCard className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  ref={scanInputRef}
+                  value={scanCode}
+                  onChange={(event) => setScanCode(event.target.value)}
+                  placeholder="Masalan: X-001"
+                  disabled={!isEditablePeriod || !todayAttendanceDay}
+                  className="h-9 bg-background pl-9"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={!isEditablePeriod || !todayAttendanceDay || !scanCode.trim()}
+                className="h-9 gap-2"
+              >
+                <ScanBarcode className="h-4 w-4" />
+                Skanerlash
+              </Button>
+            </form>
+
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <Badge variant={todayAttendanceDay ? "secondary" : "outline"}>
+                {todayAttendanceDay
+                  ? `Bugun: ${todayAttendanceDay.day}-${monthLabel}`
+                  : "Faqat joriy oyda ishlaydi"}
+              </Badge>
+              {lastScanResult && (
+                <Badge variant="outline" className="gap-1">
+                  {lastScanResult.action === "in" ? (
+                    <LogIn className="h-3 w-3 text-emerald-600" />
+                  ) : (
+                    <LogOut className="h-3 w-3 text-primary" />
+                  )}
+                  {lastScanResult.employeeId} - {lastScanResult.time}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock3 className="h-5 w-5 text-primary" />
+              Qatiy ish vaqti
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Ishga kelish">
+                <Input
+                  type="time"
+                  value={defaultSchedule.start}
+                  onChange={(event) =>
+                    setDefaultSchedule((current) => ({
+                      ...current,
+                      start: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+              <Field label="Ishdan ketish">
+                <Input
+                  type="time"
+                  value={defaultSchedule.end}
+                  onChange={(event) =>
+                    setDefaultSchedule((current) => ({
+                      ...current,
+                      end: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+            </div>
+
+            <div className="rounded-md bg-muted/40 px-3 py-2 text-sm">
+              Belgilangan vaqt:{" "}
+              <b>
+                {defaultSchedule.start || "--:--"} - {defaultSchedule.end || "--:--"}
+              </b>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setFineDialogOpen(true)}
+                className="gap-2"
+              >
+                <ReceiptText className="h-4 w-4" />
+                Jarima
+                <Badge variant="secondary" className="ml-1">
+                  {fineRules.length}
+                </Badge>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setExceptionAddOpen(true)}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Istisno xodim qo'shish
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setExceptionListOpen(true)}
+                className="gap-2"
+              >
+                <UsersRound className="h-4 w-4" />
+                Istisno xodimlar list
+                <Badge variant="outline" className="ml-1">
+                  {exceptionEmployees.length}
+                </Badge>
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={fineDialogOpen} onOpenChange={setFineDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -2107,6 +2318,60 @@ function makeInitialForm(employee: Employee | null): EmployeeFormState {
     monthlySalary: employee.monthlySalary ? String(employee.monthlySalary) : "",
     salesPercent: employee.salesPercent ? String(employee.salesPercent) : "",
   };
+}
+
+function findEmployeeByScanCode(code: string, employees: Employee[]) {
+  const tokens = scanTokens(code);
+  if (tokens.length === 0) return null;
+  return (
+    employees.find((employee) => {
+      const candidates = [
+        employee.id,
+        employee.deviceLogin,
+        employee.phone,
+        employee.phone2,
+      ].flatMap((value) => scanTokens(value ?? ""));
+      return candidates.some((candidate) => tokens.includes(candidate));
+    }) ?? null
+  );
+}
+
+function scanTokens(value: string) {
+  const raw = value.trim();
+  if (!raw) return [];
+  const values = new Set<string>([raw]);
+
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    ["id", "employeeId", "xodimId", "staffId"].forEach((key) => {
+      const item = parsed[key];
+      if (typeof item === "string" || typeof item === "number") values.add(String(item));
+    });
+  } catch {}
+
+  try {
+    const url = new URL(raw);
+    ["id", "employeeId", "xodimId", "staffId"].forEach((key) => {
+      const item = url.searchParams.get(key);
+      if (item) values.add(item);
+    });
+    const lastSegment = url.pathname.split("/").filter(Boolean).at(-1);
+    if (lastSegment) values.add(lastSegment);
+  } catch {}
+
+  const prefixed = raw.match(
+    /(?:id|employee|employeeId|xodim|xodimId|staffId)[:=\s]+([a-z0-9_-]+)/i,
+  );
+  if (prefixed?.[1]) values.add(prefixed[1]);
+
+  return Array.from(values)
+    .flatMap((item) => [item, item.replace(/[^\d+]/g, "")])
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function currentTimeValue(date = new Date()) {
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 function buildSalaryMetric(

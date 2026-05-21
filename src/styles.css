@@ -181,7 +181,8 @@
 .uzko-main-nav,
 .responsive-tabs,
 .uzko-rates,
-.uzko-bottom-middle {
+.uzko-bottom-middle,
+.sale-tabs-scroll {
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
 }
@@ -189,7 +190,8 @@
 .uzko-main-nav::-webkit-scrollbar,
 .responsive-tabs::-webkit-scrollbar,
 .uzko-rates::-webkit-scrollbar,
-.uzko-bottom-middle::-webkit-scrollbar {
+.uzko-bottom-middle::-webkit-scrollbar,
+.sale-tabs-scroll::-webkit-scrollbar {
   height: 5px;
 }
 

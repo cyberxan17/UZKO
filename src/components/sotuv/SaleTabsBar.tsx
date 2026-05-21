@@ -45,7 +45,7 @@ export function SaleTabsBar({ sales, activeId, onSelect, onAdd, onRemove }: Prop
 
   return (
     <TooltipProvider delayDuration={250}>
-      <div className="flex items-center gap-1">
+      <div className="sale-tabs-scroll flex w-full max-w-[17rem] items-center gap-1 overflow-x-auto pb-1">
         {sales.map((s) => {
           const isActive = s.id === activeId;
           return (
@@ -54,7 +54,7 @@ export function SaleTabsBar({ sales, activeId, onSelect, onAdd, onRemove }: Prop
                 <button
                   onClick={() => onSelect(s.id)}
                   className={cn(
-                    "group relative flex h-8 w-8 items-center justify-center rounded-md border text-xs font-bold tabular-nums transition-all",
+                    "group relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-xs font-bold tabular-nums transition-all",
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : "bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
@@ -100,7 +100,7 @@ export function SaleTabsBar({ sales, activeId, onSelect, onAdd, onRemove }: Prop
           <TooltipTrigger asChild>
             <button
               onClick={onAdd}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
               aria-label="Yangi sotuv"
             >
               <Plus className="h-4 w-4" />

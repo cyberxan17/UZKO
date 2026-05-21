@@ -97,7 +97,6 @@ export function TovarQaytarish({ exchangeShortcut = false, onExchangeCreated }: 
   const [modalNote, setModalNote] = React.useState("");
 
   const [finishOpen, setFinishOpen] = React.useState(false);
-  const [exchangePurchase, setExchangePurchase] = React.useState(false);
   const [customerType, setCustomerType] = React.useState<CustomerType>("oddiy");
   const [customerSearch, setCustomerSearch] = React.useState("");
   const [customerId, setCustomerId] = React.useState("");
@@ -195,21 +194,28 @@ export function TovarQaytarish({ exchangeShortcut = false, onExchangeCreated }: 
       toast.error("Miqdor noto'g'ri");
       return null;
     }
-    if (customerType === "nasiya" && !customer) {
-      toast.error("Nasiyachi mijozni tanlang");
+    const originalReceiptCustomer =
+      originalReceipt?.customerType === "nasiya" && originalReceipt.customerId
+        ? MOCK_CREDIT_CUSTOMERS.find((item) => item.id === originalReceipt.customerId)
+        : undefined;
+    const effectiveCustomerType = originalReceipt?.customerType ?? customerType;
+    const effectiveCustomer =
+      effectiveCustomerType === "nasiya" ? originalReceiptCustomer ?? customer : undefined;
+    if (effectiveCustomerType === "nasiya" && !effectiveCustomer) {
+      toast.error("Nasiyachi mijoz topilmadi");
       return null;
     }
     const receiptCustomerName =
       originalReceipt?.customerName ||
-      (customer?.firstName && customer?.lastName
-        ? `${customer.firstName} ${customer.lastName}`
+      (effectiveCustomer?.firstName && effectiveCustomer?.lastName
+        ? `${effectiveCustomer.firstName} ${effectiveCustomer.lastName}`
         : "Oddiy mijoz");
     return {
       id: `pending-return-${Date.now()}`,
       createdAt: new Date().toISOString(),
       cashier: "Joriy foydalanuvchi",
-      customerType,
-      customerId: customer?.id,
+      customerType: effectiveCustomerType,
+      customerId: effectiveCustomer?.id,
       customerName: receiptCustomerName,
       items: cart.map((item) => ({
         productId: item.product.id,
@@ -235,6 +241,7 @@ export function TovarQaytarish({ exchangeShortcut = false, onExchangeCreated }: 
       try {
         localStorage.setItem(PENDING_RETURN_EXCHANGE_KEY, JSON.stringify(pendingReturn));
       } catch {}
+      setFinishOpen(false);
       onExchangeCreated?.(pendingReturn);
       toast.success("Qaytarish savdo oynasiga o'tkazildi", {
         description: "Yangi mahsulotlarni tanlab, yakunlash bosilganda hammasi birga saqlanadi.",
@@ -527,13 +534,13 @@ export function TovarQaytarish({ exchangeShortcut = false, onExchangeCreated }: 
             </Button>
             <Button
               type="button"
-              variant={exchangePurchase ? "default" : "outline"}
-              onClick={() => setExchangePurchase((value) => !value)}
+              variant="outline"
+              onClick={() => submit("exchange")}
               disabled={cart.length === 0}
               className="w-full gap-2"
             >
               <ShoppingCart className="h-4 w-4" />
-              Mahsulot xarid qilinadi
+              Mahsulot xarid qilish
             </Button>
           </CardContent>
         </Card>
@@ -694,7 +701,7 @@ export function TovarQaytarish({ exchangeShortcut = false, onExchangeCreated }: 
               <div className="text-2xl font-bold text-primary">{formatSom(refundTotal)}</div>
             </div>
             <Button
-              onClick={() => submit(exchangePurchase ? "exchange" : "return")}
+              onClick={() => submit("return")}
               className="w-full gap-2"
             >
               <CheckCircle2 className="h-4 w-4" /> Tasdiqlash

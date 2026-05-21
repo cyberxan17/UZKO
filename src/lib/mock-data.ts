@@ -1764,6 +1764,742 @@ export const MOCK_WAREHOUSES = [
   "Tashqi maydon",
 ];
 
+type DemoProductGroup = {
+  warehouse: string;
+  unit: string;
+  names: string[];
+  basePrice: number;
+  step: number;
+  vitrina: number;
+  ombor: number;
+  perBox?: number;
+};
+
+const DEMO_PRODUCT_GROUPS: DemoProductGroup[] = [
+  {
+    warehouse: "Quruq aralashmalar",
+    unit: "qop",
+    basePrice: 46000,
+    step: 4200,
+    vitrina: 34,
+    ombor: 180,
+    perBox: 10,
+    names: [
+      "Sement PC400 25kg",
+      "Sement PC400 50kg",
+      "Sement PC500 25kg",
+      "Sement PC500 50kg",
+      "Ohak 20kg",
+      "Ohak 40kg",
+      "Gips alebastr 25kg",
+      "Gips satengips 25kg",
+      "Shpaklovka universal 20kg",
+      "Shpaklovka fasad 25kg",
+      "Plitka kley kuchli 25kg",
+      "Plitka kley standart 25kg",
+      "Beton kontakt 20kg",
+      "Suvoq aralashma 30kg",
+    ],
+  },
+  {
+    warehouse: "Asosiy ombor",
+    unit: "dona",
+    basePrice: 19000,
+    step: 5200,
+    vitrina: 42,
+    ombor: 210,
+    perBox: 20,
+    names: [
+      "Gipsokarton standart 9.5mm",
+      "Gipsokarton standart 12.5mm",
+      "Gipsokarton namga chidamli 9.5mm",
+      "Gipsokarton yonginga chidamli",
+      "Profil UD 4m",
+      "Profil CD 4m",
+      "Profil CW 50mm",
+      "Profil UW 50mm",
+      "Podves to'g'ri",
+      "Krestovina profil uchun",
+      "Shurup gipsokarton 25mm",
+      "Shurup gipsokarton 35mm",
+    ],
+  },
+  {
+    warehouse: "Armatura ombori",
+    unit: "metr",
+    basePrice: 18000,
+    step: 3800,
+    vitrina: 80,
+    ombor: 620,
+    perBox: 100,
+    names: [
+      "Armatura A500 6mm",
+      "Armatura A500 8mm",
+      "Armatura A500 10mm",
+      "Armatura A500 12mm",
+      "Armatura A500 14mm",
+      "Armatura A500 16mm",
+      "Katanka 5.5mm",
+      "Kvadrat truba 20x20",
+      "Kvadrat truba 40x40",
+      "Ugolok 25x25",
+      "Polosa metall 20mm",
+      "Setka payvand 50x50",
+    ],
+  },
+  {
+    warehouse: "Bo'yoq ombori",
+    unit: "dona",
+    basePrice: 28000,
+    step: 7600,
+    vitrina: 24,
+    ombor: 96,
+    perBox: 4,
+    names: [
+      "Emulsiya oq 5kg",
+      "Emulsiya oq 10kg",
+      "Emulsiya oq 25kg",
+      "Fasad bo'yoq 10kg",
+      "Fasad bo'yoq 25kg",
+      "Akril lak 1L",
+      "Akril lak 5L",
+      "Gruntovka chuqur 5L",
+      "Gruntovka chuqur 10L",
+      "Emal PF-115 oq 2.7kg",
+      "Emal PF-115 qora 2.7kg",
+      "Rang pigment sariq",
+      "Rang pigment ko'k",
+      "Rang pigment yashil",
+    ],
+  },
+  {
+    warehouse: "Elektr ombori",
+    unit: "dona",
+    basePrice: 6500,
+    step: 2500,
+    vitrina: 70,
+    ombor: 360,
+    perBox: 50,
+    names: [
+      "Kabel VVG 2x1.5",
+      "Kabel VVG 2x2.5",
+      "Kabel VVG 3x1.5",
+      "Kabel VVG 3x2.5",
+      "Avtomat 16A",
+      "Avtomat 25A",
+      "Avtomat 32A",
+      "Rozetka ichki oq",
+      "Rozetka tashqi oq",
+      "Viklyuchatel birlik",
+      "Viklyuchatel ikki kalit",
+      "LED lampa 12W",
+      "LED panel 18W",
+      "Izolyenta qora",
+    ],
+  },
+  {
+    warehouse: "Santexnika ombori",
+    unit: "dona",
+    basePrice: 4200,
+    step: 3400,
+    vitrina: 58,
+    ombor: 260,
+    perBox: 25,
+    names: [
+      "Truba PPR 20mm 4m",
+      "Truba PPR 25mm 4m",
+      "Truba PPR 32mm 4m",
+      "Ugolok PPR 25mm",
+      "Ugolok PPR 32mm",
+      "T-krest PPR 20mm",
+      "Mufta PPR 25mm",
+      "Kran sharli 25mm",
+      "Kran sharli 32mm",
+      "Kanalizatsiya truba 50mm",
+      "Kanalizatsiya truba 110mm",
+      "Sifon rakovina",
+      "Gofra unitaz",
+      "FUM lenta",
+    ],
+  },
+  {
+    warehouse: "Asosiy ombor",
+    unit: "dona",
+    basePrice: 34000,
+    step: 11800,
+    vitrina: 18,
+    ombor: 70,
+    perBox: 8,
+    names: [
+      "Keramogranit 60x60",
+      "Kafel devor 30x60",
+      "Metlax pol 33x33",
+      "Laminat 8mm",
+      "Plintus MDF 2.5m",
+      "Eshik MDF oq",
+      "Eshik MDF yong'oq",
+      "Eshik qulfi komplekt",
+      "Eshik ruchka komplekt",
+      "Deraza tokchasi 20cm",
+    ],
+  },
+  {
+    warehouse: "Tashqi maydon",
+    unit: "dona",
+    basePrice: 12000,
+    step: 6900,
+    vitrina: 26,
+    ombor: 115,
+    perBox: 10,
+    names: [
+      "Lopata belkurak",
+      "Masterok 180mm",
+      "Shpatel 100mm",
+      "Shpatel 300mm",
+      "Valik bo'yoq 180mm",
+      "Kist 50mm",
+      "Chelak qurilish 20L",
+      "Qolqop ishchi",
+      "Ko'zoynak himoya",
+      "Ruletka 5m",
+    ],
+  },
+];
+
+const DEMO_EMPLOYEE_NAMES = [
+  "Bekzod Aliyev",
+  "Shahzod Nurmatov",
+  "Feruza Ismoilova",
+  "Diyorbek Hasanov",
+  "Gulnoza Rasulova",
+  "Azamat Qahhorov",
+  "Malika Rustamova",
+  "Sirojiddin Komilov",
+  "Umida Karimova",
+  "Bobur Mirzayev",
+  "Rayhona Akbarova",
+  "Ibrohim Sodiqov",
+  "Zarina Murodova",
+  "Temur Xolmatov",
+  "Nilufar Hamidova",
+  "Sherzod Abdullayev",
+  "Durdona Yo'ldosheva",
+  "Jamshid To'raev",
+  "Munisa Safarova",
+  "Rustam Qo'chqorov",
+];
+
+const DEMO_CREDIT_CUSTOMER_NAMES = [
+  "Anvar Tojiboyev",
+  "Shavkat Oripov",
+  "Zafar Bozorov",
+  "Sherali Mamatov",
+  "Farrux Xudoyberdiyev",
+  "Aziza Saidova",
+  "Nodira Erkinova",
+  "Javlon Karimov",
+  "Ulug'bek Hamroyev",
+  "Sardorbek Qurbanov",
+  "Oybek Shukurov",
+  "Doston Nabiyev",
+  "G'ayrat Soliyev",
+  "Maftuna Zokirova",
+  "Islomjon Raxmonov",
+  "Muxlisa Yoqubova",
+  "Abbos Tohirov",
+  "Bahrom Akmalov",
+  "Kamola Nosirova",
+  "Lazizbek Usmonov",
+  "Sanjar Ganiev",
+  "Elyor Xakimov",
+  "Muhammadali Baratov",
+  "Shahnoza Ro'ziyeva",
+];
+
+const DEMO_REGULAR_CUSTOMER_NAMES = [
+  "Jahongir Usmonov",
+  "Ozoda Mirjalolova",
+  "Behruz Ergashev",
+  "Ziyoda Xamidova",
+  "Jasmina Normatova",
+  "Akobir Xolboyev",
+  "Daler Qosimov",
+  "Mohira Abdukarimova",
+  "Yusufjon Olimov",
+  "Nargiza Meliyeva",
+  "Suhrob Ismatov",
+  "Shirin Tursunova",
+  "Firdavs Qodirov",
+  "Dilafruz Nematova",
+  "Asadbek Rahimov",
+  "Zuhra Karimova",
+  "Miraziz Po'latov",
+  "Lola Abdullayeva",
+  "Nurbek Jamolov",
+  "Sevinch To'xtayeva",
+];
+
+const DEMO_AGENT_NAMES = [
+  "Bunyod Qurilish Ta'minot",
+  "Grand Sement Servis",
+  "Mega Profil Savdo",
+  "Atlas Bo'yoq Market",
+  "Oltin Armatura",
+  "Nur Elektr Ta'minot",
+  "Suvtex Santexnika",
+  "Fasad Plus",
+  "Master Keramika",
+  "Qurilish Bazasi 24",
+  "Temir Universal",
+  "Euro Mix Trade",
+  "Beton Max",
+  "Ideal Dekor",
+  "Profi Tools",
+  "Samarkand Build",
+  "Express Ombor",
+  "Milliy Ta'minot",
+];
+
+function demoDate(day: number, hour: number, minute: number) {
+  return new Date(
+    `2026-05-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(
+      minute,
+    ).padStart(2, "0")}:00`,
+  ).toISOString();
+}
+
+function roundTo(value: number, step: number) {
+  return Math.round(value / step) * step;
+}
+
+function splitFullName(name: string) {
+  const [firstName, ...rest] = name.split(" ");
+  return { firstName, lastName: rest.join(" ") };
+}
+
+function demoPhone(index: number, prefix = 90) {
+  return `+998${prefix}${String(3000000 + index * 13791).padStart(7, "0")}`;
+}
+
+function generateDemoProducts(): Product[] {
+  let serial = 57;
+  return DEMO_PRODUCT_GROUPS.flatMap((group, groupIndex) =>
+    group.names.map((name, index) => {
+      const productNo = serial++;
+      const price = roundTo(group.basePrice + group.step * index + groupIndex * 1250, 500);
+      const costPrice = roundTo(price * (0.72 + ((index + groupIndex) % 5) * 0.025), 500);
+      return {
+        id: `p${productNo}`,
+        name,
+        minStockAlert: index % 3 === 0 ? Math.max(8, Math.round(group.vitrina * 0.45)) : undefined,
+        price,
+        wholesalePrice: roundTo(price * (price > 20000 ? 0.91 : 0.94), 500),
+        costPrice,
+        costCurrency: "UZS",
+        barcode: `4781000000${String(productNo).padStart(3, "0")}`,
+        customCode: `QM${String(productNo).padStart(3, "0")}`,
+        unit: group.unit,
+        warehouse: group.warehouse,
+        vitrinaQty: Math.max(3, group.vitrina - (index % 8) * 2 + groupIndex),
+        omborQty: Math.max(12, group.ombor + index * 11 + groupIndex * 7),
+        perBox: group.perBox,
+        salesHistory: genHistory(60, ((index + groupIndex) % 12) + 1),
+      };
+    }),
+  );
+}
+
+function generateDemoEmployees(): Employee[] {
+  const roles = ["Sotuvchi", "Kassir", "Omborchi", "Yetkazuvchi", "Menejer", "Hisobchi"];
+  return DEMO_EMPLOYEE_NAMES.map((name, index) => {
+    const role = roles[index % roles.length];
+    return {
+      id: `X-${String(index + 11).padStart(3, "0")}`,
+      name,
+      ...splitFullName(name),
+      role,
+      roles: role === "Sotuvchi" ? ["Sotuvchi", "Savdo maslahatchisi"] : [role],
+      status: index % 11 === 0 ? "vacation" : index % 17 === 0 ? "inactive" : "active",
+      phone: demoPhone(index + 11, 91 + (index % 7)),
+      phone2: index % 4 === 0 ? demoPhone(index + 41, 97) : undefined,
+      birthDate: `${1988 + (index % 14)}-${String((index % 12) + 1).padStart(2, "0")}-${String(
+        (index % 25) + 3,
+      ).padStart(2, "0")}`,
+      passport: `AA${String(1200000 + index * 3751).padStart(7, "0")}`,
+      monthlySalary: 2800000 + (index % 8) * 350000,
+      workDays: index % 2 === 0 ? 26 : 24,
+      workHoursPerDay: index % 3 === 0 ? 9 : 8,
+      payType: role === "Sotuvchi" ? "fixed_plus_sales" : "fixed",
+      salesPercent: role === "Sotuvchi" ? 1.5 + (index % 3) * 0.5 : undefined,
+      source: "manual",
+      deviceLogin: index % 6 === 0 ? `demo-${index + 11}` : undefined,
+    };
+  });
+}
+
+function generateDemoRegularCustomers(): RegularCustomer[] {
+  return DEMO_REGULAR_CUSTOMER_NAMES.map((name, index) => {
+    const { firstName, lastName } = splitFullName(name);
+    return {
+      id: `rc${index + 3}`,
+      firstName,
+      lastName,
+      phone: demoPhone(index + 60, 93 + (index % 5)),
+      createdAt: demoDate((index % 7) + 1, 9 + (index % 8), (index * 9) % 60),
+      lastReceiptAt: demoDate(7 - (index % 7), 10 + (index % 8), (index * 11) % 60),
+    };
+  });
+}
+
+function makeDebtReceipt(
+  id: string,
+  date: string,
+  title: string,
+  amount: number,
+  status: CustomerDebtReceipt["status"],
+  note?: string,
+): CustomerDebtReceipt {
+  return {
+    id,
+    date,
+    type: title === "Qarz so'ndirish" ? "payment" : "sale",
+    title,
+    items:
+      title === "Qarz so'ndirish"
+        ? []
+        : [{ name: "Qurilish mollari", qty: 1, unit: "chek", amount }],
+    amount,
+    paidAmount: status === "partial" ? Math.round(amount * 0.28) : undefined,
+    debtAmount: status === "partial" ? Math.round(amount * 0.72) : undefined,
+    status,
+    note,
+  };
+}
+
+function generateDemoCreditCustomers(): CreditCustomer[] {
+  const roles: CreditCustomer["role"][] = ["prorab", "usta", "mijoz"];
+  return DEMO_CREDIT_CUSTOMER_NAMES.map((name, index) => {
+    const { firstName, lastName } = splitFullName(name);
+    const saleA = 850000 + index * 145000;
+    const saleB = 420000 + (index % 9) * 90000;
+    const payment = Math.round((saleA + saleB) * (0.18 + (index % 4) * 0.04));
+    const currentDebt = Math.max(0, saleA + saleB - payment);
+    const id = `c${index + 5}`;
+    return {
+      id,
+      firstName,
+      lastName,
+      phone: demoPhone(index + 95, 94 + (index % 5)),
+      botEnabled: index % 3 === 0,
+      role: roles[index % roles.length],
+      limit: 3000000 + (index % 8) * 1500000,
+      limitCurrency: "UZS",
+      currentDebt,
+      dueDate: `2026-05-${String(10 + (index % 18)).padStart(2, "0")}`,
+      objects:
+        index % 4 === 0
+          ? [
+              { id: `OBJ-${index + 1}A`, name: "Uy qurilishi", debt: Math.round(currentDebt * 0.62) },
+              { id: `OBJ-${index + 1}B`, name: "Dala hovli", debt: Math.round(currentDebt * 0.38) },
+            ]
+          : undefined,
+      receipts: [
+        makeDebtReceipt(
+          `N-D${String(index * 2 + 1).padStart(4, "0")}`,
+          demoDate(2 + (index % 6), 10 + (index % 7), (index * 7) % 60),
+          "Nasiya savdo",
+          saleA,
+          index % 2 === 0 ? "partial" : "unpaid",
+          "Demo nasiya chek",
+        ),
+        makeDebtReceipt(
+          `N-D${String(index * 2 + 2).padStart(4, "0")}`,
+          demoDate(3 + (index % 5), 12 + (index % 6), (index * 13) % 60),
+          "Nasiya savdo",
+          saleB,
+          "unpaid",
+          "Qo'shimcha material",
+        ),
+        makeDebtReceipt(
+          `QS-D${String(index + 1).padStart(4, "0")}`,
+          demoDate(5 + (index % 3), 15 + (index % 4), (index * 17) % 60),
+          "Qarz so'ndirish",
+          -payment,
+          "paid",
+          "Demo to'lov",
+        ),
+      ],
+    };
+  });
+}
+
+function generateDemoSupplierReports(): SupplierReport[] {
+  return DEMO_AGENT_NAMES.map((name, index) => {
+    const productA = MOCK_PRODUCTS[(index * 5) % MOCK_PRODUCTS.length];
+    const productB = MOCK_PRODUCTS[(index * 5 + 9) % MOCK_PRODUCTS.length];
+    const amountA = (productA?.costPrice ?? 45000) * (12 + (index % 9) * 3);
+    const amountB = (productB?.costPrice ?? 35000) * (8 + (index % 7) * 2);
+    const totalAmount = roundTo(amountA + amountB, 1000);
+    const paidAmount = roundTo(totalAmount * (0.28 + (index % 5) * 0.09), 1000);
+    const remainingDebt = Math.max(0, totalAmount - paidAmount);
+    return {
+      id: `sr-demo-${String(index + 1).padStart(3, "0")}`,
+      date: demoDate(1 + (index % 7), 8 + (index % 9), (index * 11) % 60),
+      addedBy: index % 2 === 0 ? "Admin" : "Omborchi",
+      agentId: `AG-${String(index + 2).padStart(4, "0")}`,
+      agentName: name,
+      agentPhone: demoPhone(index + 130, 95 + (index % 4)),
+      botEnabled: index % 3 === 0,
+      items: [
+        {
+          productName: productA?.name ?? "Demo tovar",
+          qty: 12 + (index % 9) * 3,
+          unit: productA?.unit ?? "dona",
+          amount: roundTo(amountA, 1000),
+        },
+        {
+          productName: productB?.name ?? "Demo tovar",
+          qty: 8 + (index % 7) * 2,
+          unit: productB?.unit ?? "dona",
+          amount: roundTo(amountB, 1000),
+        },
+      ],
+      totalAmount,
+      paidAmount,
+      remainingDebt,
+      note: "Ertangi taqdimot uchun demo agent prixodi",
+    };
+  });
+}
+
+function generateDemoReceipts(count: number) {
+  const cashiers = [
+    "Sardor Tursunov",
+    "Akmal Karimov",
+    "Madina Sobirova",
+    "Bekzod Aliyev",
+    "Feruza Ismoilova",
+    "Diyorbek Hasanov",
+  ];
+  const receipts: Receipt[] = [];
+
+  for (let index = 0; index < count; index++) {
+    const itemCount = 2 + (index % 3);
+    const items: ReceiptItem[] = Array.from({ length: itemCount }, (_, itemIndex) => {
+      const product = MOCK_PRODUCTS[(index * 7 + itemIndex * 11) % MOCK_PRODUCTS.length];
+      const qty = 1 + ((index + itemIndex) % 5);
+      return {
+        productId: product?.id ?? `demo-product-${index}-${itemIndex}`,
+        name: product?.name ?? "Demo qurilish mahsuloti",
+        price: product?.price ?? 25000,
+        qty,
+        unit: product?.unit ?? "dona",
+      };
+    });
+
+    if (index % 10 === 0) {
+      items.push({
+        productId: `one-time-demo-extra-${index + 1}`,
+        name: "Yetkazib berish va tushirish xizmati",
+        price: 65000 + (index % 4) * 15000,
+        qty: 1,
+        unit: "xizmat",
+        source: "one-time",
+        note: "Demo chekdagi qo'shimcha xizmat",
+      });
+    }
+
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const discount = index % 5 === 0 ? roundTo(subtotal * 0.04, 1000) : 0;
+    const total = Math.max(0, subtotal - discount);
+    const isCredit = index % 3 === 1;
+    const creditCustomer = MOCK_CREDIT_CUSTOMERS[(index + 4) % MOCK_CREDIT_CUSTOMERS.length];
+    const regularCustomer = MOCK_REGULAR_CUSTOMERS[index % MOCK_REGULAR_CUSTOMERS.length];
+    const receiptId = `CHK-${100300 + index}`;
+    const paidAmount = isCredit ? roundTo(total * (0.25 + (index % 4) * 0.1), 1000) : total;
+    const debtAmount = isCredit ? Math.max(0, total - paidAmount) : 0;
+
+    receipts.push({
+      id: receiptId,
+      date: demoDate(7 - (index % 7), 9 + (index % 9), (index * 7) % 60),
+      cashier: cashiers[index % cashiers.length],
+      customerType: isCredit ? "nasiya" : "oddiy",
+      customerId: isCredit ? creditCustomer?.id : regularCustomer?.id,
+      customerName: isCredit
+        ? creditCustomer
+          ? `${creditCustomer.firstName} ${creditCustomer.lastName}`
+          : "Demo nasiyachi"
+        : regularCustomer
+          ? `${regularCustomer.firstName} ${regularCustomer.lastName}`
+          : "Oddiy mijoz",
+      customerPhone: isCredit ? creditCustomer?.phone : regularCustomer?.phone,
+      items,
+      subtotal,
+      discount,
+      total,
+      paidAmount: isCredit ? paidAmount : undefined,
+      debtAmount: isCredit ? debtAmount : undefined,
+    });
+
+    if (isCredit && creditCustomer) {
+      creditCustomer.currentDebt += debtAmount;
+      creditCustomer.receipts = creditCustomer.receipts ?? [];
+      creditCustomer.receipts.unshift({
+        id: `N-CHK-${100300 + index}`,
+        date: receipts[receipts.length - 1].date,
+        type: "sale",
+        status: debtAmount <= 0 ? "paid" : paidAmount > 0 ? "partial" : "unpaid",
+        title: "Nasiya savdo",
+        items: items.map((item) => ({
+          name: item.name,
+          qty: item.qty,
+          unit: item.unit,
+          amount: item.price * item.qty,
+        })),
+        amount: debtAmount,
+        paidAmount,
+        debtAmount,
+        note: `Chek ${receiptId}`,
+      });
+    }
+
+    if (index % 10 === 0) {
+      MOCK_ONE_TIME_ITEMS.unshift({
+        id: `BM-D${String(index + 1).padStart(4, "0")}`,
+        date: receipts[receipts.length - 1].date,
+        receiptId,
+        cashier: cashiers[index % cashiers.length],
+        items: items
+          .filter((item) => item.source === "one-time")
+          .map((item) => ({
+            name: item.name,
+            qty: item.qty,
+            unit: item.unit,
+            price: item.price,
+            note: item.note,
+          })),
+        total: items
+          .filter((item) => item.source === "one-time")
+          .reduce((sum, item) => sum + item.price * item.qty, 0),
+      });
+    }
+  }
+
+  return receipts;
+}
+
+function seedPresentationDemoData() {
+  const productIds = new Set(MOCK_PRODUCTS.map((product) => product.id));
+  const demoProducts = generateDemoProducts().filter((product) => !productIds.has(product.id));
+  MOCK_PRODUCTS.push(...demoProducts);
+
+  const employeeIds = new Set(MOCK_EMPLOYEES.map((employee) => employee.id));
+  MOCK_EMPLOYEES.push(...generateDemoEmployees().filter((employee) => !employeeIds.has(employee.id)));
+
+  const regularIds = new Set(MOCK_REGULAR_CUSTOMERS.map((customer) => customer.id));
+  MOCK_REGULAR_CUSTOMERS.push(
+    ...generateDemoRegularCustomers().filter((customer) => !regularIds.has(customer.id)),
+  );
+
+  const creditIds = new Set(MOCK_CREDIT_CUSTOMERS.map((customer) => customer.id));
+  MOCK_CREDIT_CUSTOMERS.push(
+    ...generateDemoCreditCustomers().filter((customer) => !creditIds.has(customer.id)),
+  );
+
+  const supplierIds = new Set(MOCK_SUPPLIER_REPORTS.map((report) => report.id));
+  const supplierReports = generateDemoSupplierReports().filter((report) => !supplierIds.has(report.id));
+  MOCK_SUPPLIER_REPORTS.push(...supplierReports);
+
+  const receiptIds = new Set(MOCK_RECEIPTS.map((receipt) => receipt.id));
+  MOCK_RECEIPTS.unshift(
+    ...generateDemoReceipts(50).filter((receipt) => !receiptIds.has(receipt.id)),
+  );
+
+  supplierReports.forEach((report, index) => {
+    MOCK_PRODUCT_HISTORY.unshift({
+      id: `ph-demo-${String(index + 1).padStart(3, "0")}`,
+      date: report.date,
+      addedBy: report.addedBy,
+      productName: report.items[0]?.productName ?? "Demo tovar",
+      qty: report.items[0]?.qty ?? 1,
+      unit: report.items[0]?.unit ?? "dona",
+      price: Math.round((report.items[0]?.amount ?? report.totalAmount) / Math.max(1, report.items[0]?.qty ?? 1)),
+      costPrice: Math.round((report.items[0]?.amount ?? report.totalAmount) / Math.max(1, report.items[0]?.qty ?? 1)),
+      warehouse: MOCK_PRODUCTS[index % MOCK_PRODUCTS.length]?.warehouse ?? "Asosiy ombor",
+      agentName: report.agentName,
+      agentId: report.agentId,
+      agentPhone: report.agentPhone,
+      paidAmount: report.paidAmount,
+      remainingDebt: report.remainingDebt,
+      totalAmount: report.totalAmount,
+      note: "Demo agent kirim tarixi",
+    });
+
+    if (report.botEnabled) {
+      MOCK_RECEIPT_DISPATCHES.unshift({
+        id: `msg-agent-demo-${index + 1}`,
+        date: report.date,
+        recipientCategory: "agent",
+        recipientId: report.agentId,
+        recipientName: report.agentName,
+        phone: report.agentPhone,
+        receiptId: report.id,
+        title: "Agent hisob-kitob cheki",
+        total: report.totalAmount,
+        note: "Demo bot yuborilgan chek",
+      });
+    }
+  });
+
+  MOCK_DEBT_PAYMENTS.push(
+    ...MOCK_CREDIT_CUSTOMERS.slice(4, 16).map((customer, index) => ({
+      id: `QS-DEMO-${String(index + 1).padStart(3, "0")}`,
+      date: demoDate(4 + (index % 4), 11 + (index % 6), (index * 19) % 60),
+      cashier: index % 2 === 0 ? "Sardor Tursunov" : "Madina Sobirova",
+      customerId: customer.id,
+      customerName: `${customer.firstName} ${customer.lastName}`,
+      amount: 180000 + index * 65000,
+      method: index % 3 === 0 ? "karta" : index % 3 === 1 ? "naqd" : "valyuta",
+      cardType: index % 3 === 0 ? "HUMO" : undefined,
+      currencyCode: index % 3 === 2 ? "USD" : undefined,
+      note: "Demo qarz so'ndirish",
+    })),
+  );
+
+  MOCK_CASH_CLOSES.push(
+    ...Array.from({ length: 7 }, (_, index) => ({
+      id: `KY-DEMO-${String(index + 1).padStart(3, "0")}`,
+      date: demoDate(1 + index, 19, 5 + index * 3),
+      cashier: index % 2 === 0 ? "Sardor Tursunov" : "Madina Sobirova",
+      cash: 1250000 + index * 180000,
+      cards: [
+        { type: "Humo", amount: 520000 + index * 70000 },
+        { type: "Uzcard", amount: 390000 + index * 45000 },
+      ],
+      currencies: index % 3 === 0 ? [{ code: "USD", amount: 100000 + index * 15000 }] : [],
+      shortage: index % 5 === 0 ? 12000 : 0,
+      leftInRegister: 150000 + index * 10000,
+      note: "Demo smena yopish",
+    })),
+  );
+
+  MOCK_WITHDRAWALS.push(
+    ...supplierReports.slice(0, 8).map((report, index) => ({
+      id: `CH-AG-DEMO-${String(index + 1).padStart(3, "0")}`,
+      date: demoDate(2 + (index % 6), 14 + (index % 4), (index * 13) % 60),
+      cashier: "Admin",
+      category: "Agentlarga to'lov",
+      cash: 250000 + index * 85000,
+      cardAmount: index % 2 === 0 ? 120000 + index * 35000 : 0,
+      currencies: [],
+      note: `${report.agentName} uchun demo to'lov`,
+      agentId: report.agentId,
+    })),
+  );
+}
+
+seedPresentationDemoData();
+
 // SSR/CSR mosligi uchun qat'iy formatlash
 export function formatSom(value: number): string {
   const rounded = Math.round(value);

@@ -260,7 +260,7 @@ function SotuvchiPage() {
       </main>
 
       <BottomBar
-        beforeCalculatorSlot={
+        afterCalculatorSlot={
           <div className="flex items-center rounded-md border bg-muted/30 p-1">
             <Button
               type="button"

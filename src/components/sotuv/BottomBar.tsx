@@ -9,10 +9,10 @@ import { Calendar } from "@/components/ui/calendar";
 type Props = {
   /** Kalkulator va valyuta orasiga joylashadigan slot (Sotuv tablari) */
   middleSlot?: React.ReactNode;
-  beforeCalculatorSlot?: React.ReactNode;
+  afterCalculatorSlot?: React.ReactNode;
 };
 
-export function BottomBar({ middleSlot, beforeCalculatorSlot }: Props) {
+export function BottomBar({ middleSlot, afterCalculatorSlot }: Props) {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [dateStr, setDateStr] = React.useState("Sana");
 
@@ -69,8 +69,6 @@ export function BottomBar({ middleSlot, beforeCalculatorSlot }: Props) {
           </PopoverContent>
         </Popover>
 
-        {beforeCalculatorSlot}
-
         <CalculatorPopover
           trigger={
             <Button
@@ -84,6 +82,8 @@ export function BottomBar({ middleSlot, beforeCalculatorSlot }: Props) {
             </Button>
           }
         />
+
+        {afterCalculatorSlot}
       </div>
 
       {middleSlot && (
