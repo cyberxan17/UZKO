@@ -1,0 +1,114 @@
+import * as React from "react";
+import { CalculatorPopover } from "./CalculatorPopover";
+import { MOCK_RATES } from "@/lib/mock-data";
+import { Calculator, CalendarDays, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+
+type Props = {
+  /** Kalkulator va valyuta orasiga joylashadigan slot (Sotuv tablari) */
+  middleSlot?: React.ReactNode;
+  beforeCalculatorSlot?: React.ReactNode;
+};
+
+export function BottomBar({ middleSlot, beforeCalculatorSlot }: Props) {
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [dateStr, setDateStr] = React.useState("Sana");
+
+  React.useEffect(() => {
+    const today = new Date();
+    setDate(today);
+    const months = [
+      "yanvar",
+      "fevral",
+      "mart",
+      "aprel",
+      "may",
+      "iyun",
+      "iyul",
+      "avgust",
+      "sentabr",
+      "oktabr",
+      "noyabr",
+      "dekabr",
+    ];
+    const weekdays = [
+      "yakshanba",
+      "dushanba",
+      "seshanba",
+      "chorshanba",
+      "payshanba",
+      "juma",
+      "shanba",
+    ];
+    const w = weekdays[today.getDay()];
+    const d = today.getDate();
+    const m = months[today.getMonth()];
+    const y = today.getFullYear();
+    setDateStr(`${w}, ${d}-${m}, ${y}`);
+  }, []);
+
+  return (
+    <div className="uzko-bottombar flex min-h-14 flex-shrink-0 items-center justify-between gap-3 border-t bg-card px-4 py-2">
+      <div className="uzko-bottom-left flex items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              title={dateStr}
+              aria-label={dateStr}
+            >
+              <CalendarDays className="h-4 w-4 text-primary" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar mode="single" selected={date} onSelect={setDate} />
+          </PopoverContent>
+        </Popover>
+
+        {beforeCalculatorSlot}
+
+        <CalculatorPopover
+          trigger={
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              title="Kalkulator"
+              aria-label="Kalkulator"
+            >
+              <Calculator className="h-4 w-4 text-primary" />
+            </Button>
+          }
+        />
+      </div>
+
+      {middleSlot && (
+        <div className="uzko-bottom-middle flex min-w-0 flex-1 items-center justify-center px-2">
+          {middleSlot}
+        </div>
+      )}
+
+      <div className="uzko-rates flex items-center gap-2">
+        <RateChip code="USD" rate={MOCK_RATES.USD} />
+        <RateChip code="RUB" rate={MOCK_RATES.RUB} />
+        <RateChip code="EUR" rate={MOCK_RATES.EUR} />
+      </div>
+    </div>
+  );
+}
+
+function RateChip({ code, rate }: { code: string; rate: number }) {
+  return (
+    <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2.5 py-1.5">
+      <DollarSign className="h-3 w-3 text-muted-foreground" />
+      <span className="text-xs font-semibold text-muted-foreground">{code}</span>
+      <span className="text-xs font-bold tabular-nums text-foreground">
+        {String(rate).replace(/\B(?=(\d{3})+(?!\d))/g, " ")}
+      </span>
+    </div>
+  );
+}
